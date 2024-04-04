@@ -2,7 +2,35 @@ const showLoginForm = () => {
     document.getElementById("loginForm").style.display = "block";
   };
 
-  
+
+  const login = async (username, password) => {
+    if (username === "gundeep" && password === "qwerty") {
+      // Correct credentials, show the button
+      sendNotificationButton.style.display = "block";
+    } else {
+      // Incorrect credentials, handle the error
+      alert("Invalid username or password");
+    }
+  };
+
+// Initially hide the Send Notification button
+const sendNotificationButton = document.querySelector("button[onclick='sendNotification()']");
+sendNotificationButton.style.display = "none";
+
+// Add a login button and its functionality
+document.body.innerHTML += `
+  <button onclick="showLoginForm()">Login</button>
+  <form id="loginForm" style="display: none;">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username"><br><br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password"><br><br>
+    <button onclick="login()">Login</button>
+  </form>
+`;
+
+
+
 const checkPermission = () => {
     if (!('serviceWorker' in navigator)){
         throw new Error('No Service Worker support!');
@@ -83,29 +111,4 @@ self.addEventListener('push', e => {
 });
 
 
-const login = async (username, password) => {
-    if (username === "gundeep" && password === "qwerty") {
-      // Correct credentials, show the button
-      sendNotificationButton.style.display = "block";
-    } else {
-      // Incorrect credentials, handle the error
-      alert("Invalid username or password");
-    }
-  };
-
-// Initially hide the Send Notification button
-const sendNotificationButton = document.querySelector("button[onclick='sendNotification()']");
-sendNotificationButton.style.display = "none";
-
-// Add a login button and its functionality
-document.body.innerHTML += `
-  <button onclick="showLoginForm()">Login</button>
-  <form id="loginForm" style="display: none;">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username"><br><br>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password"><br><br>
-    <button onclick="login()">Login</button>
-  </form>
-`;
 
