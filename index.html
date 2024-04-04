@@ -6,8 +6,14 @@
     <title>Document</title>
 </head>
 <body>
+    <div id="isadmin"><button onclick="showLoginForm()">Are you an admin?</button></div>
+    
+    <div id="loginForm" style="display:none;">
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+    </div>
     <script src="script.js"></script>
     <button onclick="enableNotifications()">Enable notifications</button>
-    <button onclick="sendNotification()">Send Notification</button> <!-- New button for sending notification -->
-</body>
+    <button id="sendNotificationButton" style="display:none;" onclick="sendNotification()">Send Notification</button>
 </html>

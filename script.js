@@ -1,3 +1,23 @@
+function showLoginForm() {
+    document.getElementById("isadmin").style.display = "none";
+    document.getElementById("loginForm").style.display = "block";
+}
+
+function login() {
+    var usernameInput = document.getElementById("username").value;
+    var passwordInput = document.getElementById("password").value;
+
+    // Check if the entered credentials match the predefined ones
+    if (usernameInput === "gundeep" && passwordInput === "qwerty") {
+        alert("Login successful!");
+        document.getElementById("sendNotificationButton").style.display = "block";
+        document.getElementById("loginForm").style.display = "none";
+        // Redirect to a different page or perform other actions upon successful login
+    } else {
+        alert("Invalid username or password!");
+    }
+}
+
 const checkPermission = () => {
     if (!('serviceWorker' in navigator)){
         throw new Error('No Service Worker support!');
