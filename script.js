@@ -1,4 +1,8 @@
+const showLoginForm = () => {
+    document.getElementById("loginForm").style.display = "block";
+  };
 
+  
 const checkPermission = () => {
     if (!('serviceWorker' in navigator)){
         throw new Error('No Service Worker support!');
@@ -105,6 +109,3 @@ document.body.innerHTML += `
   </form>
 `;
 
-const showLoginForm = () => {
-  document.getElementById("loginForm").style.display = "block";
-};
