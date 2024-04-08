@@ -2,9 +2,10 @@ const express = require("express");
 const app = express();
 const webpush = require('web-push');
 const cors = require("cors");
-const { MongoClient } = require('mongodb');
+const mongoose = require('mongoose');
+const User = require('./user');
 
-const port = process.env.PORT || 3000;
+const port = 3000;
 
 const apiKeys = {
     publicKey: "BFKnRoDz48jEu9XMhT7ogCHkMb82kgCIpVBrdWb9MFOoDQ_S7vQ4TXFf9YLGAvB2XAKXufCEeMuRvpoNUkRP8Xg",
@@ -12,7 +13,7 @@ const apiKeys = {
 };
 
 webpush.setVapidDetails(
-    'mailto:gundeepsinghm@gmail.com',
+    'mailto:gundeepsinghm@gmail.com@gmail.com',
     apiKeys.publicKey,
     apiKeys.privateKey
 );
@@ -20,55 +21,54 @@ webpush.setVapidDetails(
 app.use(cors());
 app.use(express.json());
 
+// Connect to MongoDB Atlas
+mongoose.connect('mongodb+srv://<username>:<password>@<cluster-url>/<database-name>', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log('MongoDB Connected'))
+.catch(err => console.log(err));
+
 app.get("/", (req, res) => {
     res.send("Hello world");
 });
 
-// MongoDB Connection URL
-const mongoURL = "mongodb+srv://gundeepsinghm:collegepassword@cluster0.rnnuthn.mongodb.net/?retryWrites=true&w=majority"; // MongoDB Atlas connection URI
-
-// Function to connect to MongoDB
-async function connectToDatabase() {
-    const client = new MongoClient(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true });
-    await client.connect();
-    return client.db();
-}
-
 app.post("/save-subscription", async (req, res) => {
+    const { name, email, subscription } = req.body;
     try {
-        const db = await connectToDatabase();
-        const subscriptions = db.collection('subscriptions');
-        await subscriptions.insertOne(req.body);
+        const user = new User({ name, email, subscription });
+        await user.save();
         res.json({ status: "Success", message: "Subscription saved!" });
     } catch (error) {
-        console.error("Error saving subscription:", error);
+        console.error(error);
         res.status(500).json({ status: "Error", message: "Failed to save subscription" });
     }
 });
 
 // Function to send notifications to all subscribers
-async function sendNotificationToAllSubscribers(message) {
-    try {
-        const db = await connectToDatabase();
-        const subscriptions = db.collection('subscriptions');
-        const allSubscriptions = await subscriptions.find().toArray();
-        allSubscriptions.forEach(subscription => {
-            webpush.sendNotification(subscription, message)
+function sendNotificationToAllSubscribers(message) {
+    User.find({}, (err, users) => {
+        if (err) {
+            console.error("Error retrieving users:", err);
+            return;
+        }
+        users.forEach(user => {
+            webpush.sendNotification(user.subscription, message)
                 .catch(error => {
                     console.error("Error sending notification:", error);
                 });
         });
-    } catch (error) {
-        console.error("Error sending notification:", error);
-    }
+    });
 }
 
+// Route to handle sending push notification triggered by button click
 app.post("/send-notification", (req, res) => {
     const { message } = req.body;
     sendNotificationToAllSubscribers(message);
     res.json({ status: "Success", message: "Notification sent!" });
 });
 
+// Trigger the function when the server starts
 app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+    console.log("Server running on port 3000!");
 });
