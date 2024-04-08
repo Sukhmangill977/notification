@@ -48,7 +48,7 @@ const enableNotifications = async () => {
 
 const sendNotification = async () => {
     // Send notification manually
-    const response = await fetch('https://notification-0xlp.onrender.com/send-notification', {
+    const response = await fetch('https://notification-1.onrender.com/send-notification', {
         method: 'post',
         headers: { 'Content-type': "application/json" },
         body: JSON.stringify({ message: "Event is organized!" })
@@ -74,7 +74,7 @@ const urlBase64ToUint8Array = base64String => {
 };
 
 const saveSubscription = async (subscription) => {
-    const response = await fetch('https://notification-0xlp.onrender.com/save-subscription', {
+    const response = await fetch('https://notification-1.onrender.com/save-subscription', {
         method: 'post',
         headers: { 'Content-type': "application/json" },
         body: JSON.stringify(subscription)
