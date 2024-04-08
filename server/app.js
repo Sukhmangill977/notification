@@ -2,8 +2,6 @@ const express = require("express");
 const app = express();
 const webpush = require('web-push');
 const cors = require("cors");
-const mongoose = require('mongoose');
-const User = require('./user');
 
 const port = 3000;
 
@@ -13,7 +11,7 @@ const apiKeys = {
 };
 
 webpush.setVapidDetails(
-    'mailto:gundeepsinghm@gmail.com@gmail.com',
+    'mailto:goyalyash1605@gmail.com',
     apiKeys.publicKey,
     apiKeys.privateKey
 );
@@ -21,43 +19,24 @@ webpush.setVapidDetails(
 app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB Atlas
-mongoose.connect('mongodb+srv://gundeepsinghm:collegepassword@cluster0.rnnuthn.mongodb.net/?retryWrites=true&w=majority', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => console.log('MongoDB Connected'))
-.catch(err => console.log(err));
-
 app.get("/", (req, res) => {
     res.send("Hello world");
 });
 
-app.post("/save-subscription", async (req, res) => {
-    const { name, email, subscription } = req.body;
-    try {
-        const user = new User({ name, email, subscription });
-        await user.save();
-        res.json({ status: "Success", message: "Subscription saved!" });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ status: "Error", message: "Failed to save subscription" });
-    }
+const subDatabase = [];
+
+app.post("/save-subscription", (req, res) => {
+    subDatabase.push(req.body);
+    res.json({ status: "Success", message: "Subscription saved!" });
 });
 
 // Function to send notifications to all subscribers
 function sendNotificationToAllSubscribers(message) {
-    User.find({}, (err, users) => {
-        if (err) {
-            console.error("Error retrieving users:", err);
-            return;
-        }
-        users.forEach(user => {
-            webpush.sendNotification(user.subscription, message)
-                .catch(error => {
-                    console.error("Error sending notification:", error);
-                });
-        });
+    subDatabase.forEach(subscription => {
+        webpush.sendNotification(subscription, message)
+            .catch(error => {
+                console.error("Error sending notification:", error);
+            });
     });
 }
 
